@@ -8,6 +8,9 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+require_once __DIR__ . '/includes/redirect.php';
+require_once __DIR__ . '/includes/config.php';
+
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -19,14 +22,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($name === '' || $email === '' || $password === '') {
         $error = 'Por favor, preenche todos os campos para criar a conta.';
     } else {
-        $_SESSION['user'] = [
-            'name' => $name,
-            'email' => $email,
-            'role' => $role,
-        ];
+        // Verificar se já existe um utilizador com este email
+        $stmt = $conn->prepare('SELECT id FROM users WHERE email = ? LIMIT 1');
+        $stmt->bind_param('s', $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-        header('Location: dashboard.php');
-        exit;
+        if ($result->num_rows > 0) {
+            $error = 'Já existe uma conta com este email. Tenta outro email ou inicia sessão.';
+        } else {
+            // Criar nova conta
+            $hash = password_hash($password, PASSWORD_DEFAULT);
+            $stmt = $conn->prepare('INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)');
+            $stmt->bind_param('ssss', $name, $email, $hash, $role);
+            $stmt->execute();
+
+            // Guardar dados do utilizador na sessão
+            $_SESSION['user'] = [
+                'id' => (int) $stmt->insert_id,
+                'name' => $name,
+                'email' => $email,
+                'role' => $role,
+                'pontos' => 0,
+            ];
+
+            // Redirecionar conforme tipo de utilizador
+            if ($role === 'tutor') {
+                safe_redirect('tutor.php');
+            } else {
+                safe_redirect('dashboard.php');
+            }
+        }
     }
 }
 

@@ -12,6 +12,7 @@ require __DIR__ . '/includes/header.php';
 
 <section class="card">
   <h1>Olá, <?= htmlspecialchars($user['name'], ENT_QUOTES, 'UTF-8') ?>!</h1>
+  <p>Os teus pontos: <strong><?= (int) $user['pontos'] ?></strong></p>
   <p>Seleciona uma opção abaixo para continuar.</p>
 
   <div class="grid grid-3">

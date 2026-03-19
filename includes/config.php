@@ -23,6 +23,35 @@ if ($conn->connect_error) {
 // UTF-8 é o charset padrão para trabalhar com acentos e caracteres especiais em português
 $conn->set_charset('utf8mb4');
 
+// ===== CRIAR TABELAS OBRIGATÓRIAS =====
+// Estes comandos são executados apenas se as tabelas ainda não existirem.
+$conn->query(
+    "CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        role ENUM('aluno','tutor') NOT NULL DEFAULT 'aluno',
+        pontos INT NOT NULL DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
+);
+
+$conn->query(
+    "CREATE TABLE IF NOT EXISTS quiz_answers (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        question_key VARCHAR(50) NOT NULL,
+        student_answer TEXT NOT NULL,
+        status ENUM('pendente','certo','errado') NOT NULL DEFAULT 'pendente',
+        comment TEXT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        UNIQUE KEY (user_id, question_key),
+        INDEX (user_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
+);
+
 // ===== VARIÁVEL GLOBAL =====
 // Agora $conn está pronto para usar em qualquer página que faça include deste ficheiro.
 ?>
