@@ -9,13 +9,13 @@ require __DIR__ . '/includes/auth_aluno.php';
 
 $answers = $_SESSION['last_quiz'] ?? null;
 
-// Definição das respostas corretas
+// Definição das respostas corretas "Verdadeiro" ou "Falso"
 $correct = [
-    'commit' => 'Um snapshot de alterações no repositório',
-    'push' => 'Enviar alterações locais para o repositório remoto',
-    'pull' => 'Trazer alterações do repositório remoto para a tua cópia local',
-    'branch' => 'Uma linha independente de desenvolvimento dentro do mesmo repositório',
-    'github' => 'Hospedar repositórios Git online e colaborar',
+    'push' => 'Verdadeiro',
+    'pull' => 'Falso',
+    'branch' => 'Verdadeiro',
+    'commit' => 'Verdadeiro',
+    'github' => 'Falso',
 ];
 
 require __DIR__ . '/includes/header.php';

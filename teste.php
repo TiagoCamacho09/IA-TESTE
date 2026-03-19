@@ -9,57 +9,27 @@ require __DIR__ . '/includes/auth_aluno.php';
 
 $error = '';
 
-// Definição das perguntas e opções
+// Definição do quiz em formato Verdadeiro ou Falso
 $quiz = [
     [
-        'key' => 'commit',
-        'question' => 'O que é um commit?',
-        'options' => [
-            'Um snapshot de alterações no repositório',
-            'Um servidor remoto para guardar código',
-            'Um ficheiro de configuração do Git',
-            'Um comando para criar uma branch',
-        ],
-    ],
-    [
         'key' => 'push',
-        'question' => 'O que é push?',
-        'options' => [
-            'Enviar alterações locais para o repositório remoto',
-            'Descarregar alterações do remoto para local',
-            'Apagar uma branch',
-            'Criar um novo repositório',
-        ],
+        'question' => 'O push serve para enviar alterações para o repositório remoto.',
     ],
     [
         'key' => 'pull',
-        'question' => 'O que é pull?',
-        'options' => [
-            'Trazer alterações do repositório remoto para a tua cópia local',
-            'Enviar alterações locais para o remoto',
-            'Apagar ficheiros que não são usados',
-            'Reverter o último commit',
-        ],
+        'question' => 'O pull serve para apagar ficheiros locais.',
     ],
     [
         'key' => 'branch',
-        'question' => 'O que é uma branch?',
-        'options' => [
-            'Uma linha independente de desenvolvimento dentro do mesmo repositório',
-            'Um comando para gerir permissões',
-            'Um ficheiro onde se guarda o histórico',
-            'Um serviço para fazer deployment',
-        ],
+        'question' => 'Uma branch é um caminho separado de trabalho.',
+    ],
+    [
+        'key' => 'commit',
+        'question' => 'O commit guarda uma versão do projeto.',
     ],
     [
         'key' => 'github',
-        'question' => 'Para que serve o GitHub?',
-        'options' => [
-            'Hospedar repositórios Git online e colaborar',
-            'Fazer backups automáticos do Windows',
-            'Servir páginas web apenas',
-            'Gerir bases de dados',
-        ],
+        'question' => 'O GitHub é uma base de dados MySQL.',
     ],
 ];
 
@@ -102,16 +72,34 @@ require __DIR__ . '/includes/header.php';
         <h2>Pergunta <?= $index + 1 ?> de <?= count($quiz) ?></h2>
         <p><?= htmlspecialchars($item['question'], ENT_QUOTES, 'UTF-8') ?></p>
 
-        <div class="form-group">
-          <select name="<?= htmlspecialchars($item['key'], ENT_QUOTES, 'UTF-8') ?>" required>
-            <option value="" disabled selected>Seleciona uma opção</option>
-            <?php foreach ($item['options'] as $option): ?>
-              <option value="<?= htmlspecialchars($option, ENT_QUOTES, 'UTF-8') ?>"
-                <?= (isset($_POST[$item['key']]) && $_POST[$item['key']] === $option) ? 'selected' : '' ?>>
-                <?= htmlspecialchars($option, ENT_QUOTES, 'UTF-8') ?>
-              </option>
-            <?php endforeach; ?>
-          </select>
+        <div class="options-grid">
+          <?php
+            $trueChecked = (isset($_POST[$item['key']]) && $_POST[$item['key']] === 'Verdadeiro') ? 'checked' : '';
+            $falseChecked = (isset($_POST[$item['key']]) && $_POST[$item['key']] === 'Falso') ? 'checked' : '';
+          ?>
+          <div class="option-card">
+            <input
+              type="radio"
+              id="<?= htmlspecialchars($item['key'] . '-true', ENT_QUOTES, 'UTF-8') ?>"
+              name="<?= htmlspecialchars($item['key'], ENT_QUOTES, 'UTF-8') ?>"
+              value="Verdadeiro"
+              <?= $trueChecked ?>
+              required
+            >
+            <label for="<?= htmlspecialchars($item['key'] . '-true', ENT_QUOTES, 'UTF-8') ?>">Verdadeiro</label>
+          </div>
+
+          <div class="option-card">
+            <input
+              type="radio"
+              id="<?= htmlspecialchars($item['key'] . '-false', ENT_QUOTES, 'UTF-8') ?>"
+              name="<?= htmlspecialchars($item['key'], ENT_QUOTES, 'UTF-8') ?>"
+              value="Falso"
+              <?= $falseChecked ?>
+              required
+            >
+            <label for="<?= htmlspecialchars($item['key'] . '-false', ENT_QUOTES, 'UTF-8') ?>">Falso</label>
+          </div>
         </div>
       </div>
     <?php endforeach; ?>
