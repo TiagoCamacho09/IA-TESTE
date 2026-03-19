@@ -8,6 +8,10 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Incluir configuração da base de dados e helpers comuns
+require __DIR__ . '/includes/config.php';
+require_once __DIR__ . '/includes/redirect.php';
+
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

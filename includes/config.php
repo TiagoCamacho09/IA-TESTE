@@ -37,6 +37,24 @@ $conn->query(
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
 );
 
+// Se o utilizador já existia antes de termos a coluna 'pontos', adiciona-a agora.
+// Verificamos primeiro se a coluna existe para manter compatibilidade com MySQL mais antigos.
+$checkColumn = $conn->prepare(
+    "SELECT COUNT(*) AS coluna_existe
+     FROM information_schema.columns
+     WHERE table_schema = ?
+       AND table_name = 'users'
+       AND column_name = 'pontos'"
+);
+$checkColumn->bind_param('s', $database);
+$checkColumn->execute();
+$colResult = $checkColumn->get_result();
+$colRow = $colResult ? $colResult->fetch_assoc() : null;
+
+if (!$colRow || (int) $colRow['coluna_existe'] === 0) {
+    $conn->query("ALTER TABLE users ADD COLUMN pontos INT NOT NULL DEFAULT 0");
+}
+
 $conn->query(
     "CREATE TABLE IF NOT EXISTS quiz_answers (
         id INT AUTO_INCREMENT PRIMARY KEY,

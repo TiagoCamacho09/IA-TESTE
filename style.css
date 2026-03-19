@@ -91,6 +91,16 @@ a {
   flex-wrap: wrap;
 }
 
+.points-badge {
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  background: rgba(16, 185, 129, 0.12);
+  font-size: 0.9rem;
+  color: rgba(16, 185, 129, 0.95);
+  font-weight: 700;
+}
+
 .user-badge {
   padding: 0.35rem 0.65rem;
   border-radius: 999px;

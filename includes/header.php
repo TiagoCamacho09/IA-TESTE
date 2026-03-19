@@ -36,6 +36,10 @@ $current = basename($_SERVER['PHP_SELF']);
 
     <div class="header-actions">
       <?php if ($user): ?>
+        <span class="points-badge" title="Os teus pontos">
+          Pontos: <?= (int) ($user['pontos'] ?? 0) ?>
+        </span>
+
         <span class="user-badge" title="<?= htmlspecialchars($user['role'], ENT_QUOTES, 'UTF-8') ?>">
           <?= htmlspecialchars($user['name'], ENT_QUOTES, 'UTF-8') ?>
         </span>

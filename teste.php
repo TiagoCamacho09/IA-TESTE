@@ -106,10 +106,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $pontos = $score * 10;
 
-        // Atualizar pontos do utilizador na base de dados (acumular pontos)
-        $stmt = $conn->prepare('UPDATE users SET pontos = pontos + ? WHERE id = ?');
+        // Atualizar pontos do utilizador na base de dados (definir o total com base na última execução)
+        $stmt = $conn->prepare('UPDATE users SET pontos = ? WHERE id = ?');
         $stmt->bind_param('ii', $pontos, $userId);
         $stmt->execute();
+
+        // Atualizar pontos na sessão para mostrar imediatamente no header
+        if (isset($_SESSION['user'])) {
+            $_SESSION['user']['pontos'] = $pontos;
+        }
+        $user['pontos'] = $pontos;
 
         safe_redirect('resultado.php');
     }
