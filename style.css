@@ -235,7 +235,6 @@ label {
 input[type="text"],
 input[type="email"],
 input[type="password"],
-select,
 textarea {
   width: 100%;
   padding: 0.85rem 0.9rem;
@@ -247,8 +246,54 @@ textarea {
   transition: border 150ms ease;
 }
 
+.option-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.9rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+.option-card:hover {
+  border-color: rgba(37, 99, 235, 0.25);
+  background: rgba(255, 255, 255, 0.95);
+  transform: translateY(-1px);
+}
+
+.option-card input[type="radio"] {
+  accent-color: var(--primary);
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.option-card label {
+  margin: 0;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  padding: 0.4rem 0;
+  border-radius: 0.75rem;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.option-card input[type="radio"]:checked + label {
+  font-weight: 700;
+  color: var(--text);
+  background: rgba(37, 99, 235, 0.1);
+}
+
+.options-grid {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
 input:focus,
-select:focus,
 textarea:focus {
   border-color: rgba(37, 99, 235, 0.8);
 }

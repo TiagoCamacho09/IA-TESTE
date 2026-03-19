@@ -102,16 +102,27 @@ require __DIR__ . '/includes/header.php';
         <h2>Pergunta <?= $index + 1 ?> de <?= count($quiz) ?></h2>
         <p><?= htmlspecialchars($item['question'], ENT_QUOTES, 'UTF-8') ?></p>
 
-        <div class="form-group">
-          <select name="<?= htmlspecialchars($item['key'], ENT_QUOTES, 'UTF-8') ?>" required>
-            <option value="" disabled selected>Seleciona uma opção</option>
-            <?php foreach ($item['options'] as $option): ?>
-              <option value="<?= htmlspecialchars($option, ENT_QUOTES, 'UTF-8') ?>"
-                <?= (isset($_POST[$item['key']]) && $_POST[$item['key']] === $option) ? 'selected' : '' ?>>
-                <?= htmlspecialchars($option, ENT_QUOTES, 'UTF-8') ?>
-              </option>
-            <?php endforeach; ?>
-          </select>
+        <div class="options-grid">
+          <?php foreach ($item['options'] as $optionIndex => $option): ?>
+            <?php
+              $inputId = htmlspecialchars($item['key'] . '-' . $optionIndex, ENT_QUOTES, 'UTF-8');
+              $inputName = htmlspecialchars($item['key'], ENT_QUOTES, 'UTF-8');
+              $inputValue = htmlspecialchars($option, ENT_QUOTES, 'UTF-8');
+              $checked = (isset($_POST[$item['key']]) && $_POST[$item['key']] === $option) ? 'checked' : '';
+            ?>
+
+            <div class="option-card">
+              <input
+                type="radio"
+                id="<?= $inputId ?>"
+                name="<?= $inputName ?>"
+                value="<?= $inputValue ?>"
+                <?= $checked ?>
+                required
+              >
+              <label for="<?= $inputId ?>"><?= $inputValue ?></label>
+            </div>
+          <?php endforeach; ?>
         </div>
       </div>
     <?php endforeach; ?>

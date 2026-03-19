@@ -10,9 +10,9 @@ require __DIR__ . '/auth.php';
 if (($user['role'] ?? '') !== 'tutor') {
     // Não é tutor, redirecionar com base no tipo
     if (($user['role'] ?? '') === 'aluno') {
-        header('Location: ' . dirname(__DIR__) . '/dashboard.php');
+        header('Location: dashboard.php');
     } else {
-        header('Location: ' . dirname(__DIR__) . '/login.php');
+        header('Location: login.php');
     }
     exit;
 }
