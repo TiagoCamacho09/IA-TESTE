@@ -111,6 +111,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param('ii', $pontos, $userId);
         $stmt->execute();
 
+        // Guardar respostas para mostrar no resultado local (resultado.php)
+        $_SESSION['last_quiz'] = $answers;
+
         // Atualizar pontos na sessão para mostrar imediatamente no header
         if (isset($_SESSION['user'])) {
             $_SESSION['user']['pontos'] = $pontos;

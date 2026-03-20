@@ -7,67 +7,87 @@ $pageTitle = 'Resultados dos Alunos - Tutor';
 // Verificar se é tutor autenticado
 require __DIR__ . '/includes/auth_tutor.php';
 
-// Simulação de dados dos alunos com respostas
-// Em produção, estes dados viriam de uma base de dados
-$alunosResultados = [
-    [
-        'id' => 1,
-        'nome' => 'João Silva',
-        'email' => 'joao@exemplo.com',
-        'certas' => 4,
-        'erradas' => 1,
-        'pontuacao' => 80,
-        'data' => '2026-03-20 14:30',
-        'status' => 'Avançado',
-    ],
-    [
-        'id' => 2,
-        'nome' => 'Maria Fernandes',
-        'email' => 'maria@exemplo.com',
-        'certas' => 3,
-        'erradas' => 2,
-        'pontuacao' => 60,
-        'data' => '2026-03-20 13:15',
-        'status' => 'Intermédio',
-    ],
-    [
-        'id' => 3,
-        'nome' => 'Rúben Costa',
-        'email' => 'ruben@exemplo.com',
-        'certas' => 5,
-        'erradas' => 0,
-        'pontuacao' => 100,
-        'data' => '2026-03-19 16:45',
-        'status' => 'Avançado',
-    ],
-    [
-        'id' => 4,
-        'nome' => 'Sofia Oliveira',
-        'email' => 'sofia@exemplo.com',
-        'certas' => 2,
-        'erradas' => 3,
-        'pontuacao' => 40,
-        'data' => '2026-03-19 10:20',
-        'status' => 'Iniciante',
-    ],
-    [
-        'id' => 5,
-        'nome' => 'Pedro Martins',
-        'email' => 'pedro@exemplo.com',
-        'certas' => 4,
-        'erradas' => 1,
-        'pontuacao' => 80,
-        'data' => '2026-03-18 15:00',
-        'status' => 'Avançado',
-    ],
+// Obter alunos e respostas reais a partir da base de dados
+$correctAnswers = [
+    'commit' => 'Um snapshot de alterações no repositório',
+    'push' => 'Enviar alterações locais para o repositório remoto',
+    'pull' => 'Trazer alterações do repositório remoto para a tua cópia local',
+    'branch' => 'Uma linha independente de desenvolvimento dentro do mesmo repositório',
+    'github' => 'Hospedar repositórios Git online e colaborar',
 ];
 
-// Calcular estatísticas
+$alunosRaw = [];
+$stmt = $conn->prepare(
+    'SELECT u.id, u.name, u.email, u.pontos, qa.question_key, qa.student_answer, qa.updated_at
+     FROM users u
+     LEFT JOIN quiz_answers qa ON u.id = qa.user_id
+     WHERE u.role = ?
+     ORDER BY u.name ASC, qa.updated_at DESC'
+);
+$role = 'aluno';
+$stmt->bind_param('s', $role);
+$stmt->execute();
+$result = $stmt->get_result();
+
+while ($row = $result->fetch_assoc()) {
+    $userId = (int) $row['id'];
+    if (!isset($alunosRaw[$userId])) {
+        $alunosRaw[$userId] = [
+            'id' => $userId,
+            'nome' => $row['name'],
+            'email' => $row['email'],
+            'pontos' => (int) $row['pontos'],
+            'respostas' => [],
+            'last_at' => $row['updated_at'] ?? null,
+        ];
+    }
+
+    if (!empty($row['question_key'])) {
+        $alunosRaw[$userId]['respostas'][] = [
+            'question_key' => $row['question_key'],
+            'student_answer' => $row['student_answer'],
+            'updated_at' => $row['updated_at'],
+        ];
+    }
+}
+
+$alunosResultados = [];
+foreach ($alunosRaw as $aluno) {
+    $certas = 0;
+    $erradas = 0;
+    $total = count($aluno['respostas']);
+
+    foreach ($aluno['respostas'] as $resposta) {
+        $key = $resposta['question_key'];
+        if (isset($correctAnswers[$key])) {
+            if ($resposta['student_answer'] === $correctAnswers[$key]) {
+                $certas++;
+            } else {
+                $erradas++;
+            }
+        }
+    }
+
+    $pontuacao = $total > 0 ? round(($certas / $total) * 100) : 0;
+    $status = $total === 0 ? 'Sem respostas' : ($pontuacao >= 80 ? 'Avançado' : ($pontuacao >= 60 ? 'Intermédio' : 'Iniciante'));
+
+    $alunosResultados[] = [
+        'id' => $aluno['id'],
+        'nome' => $aluno['nome'],
+        'email' => $aluno['email'],
+        'certas' => $certas,
+        'erradas' => $erradas,
+        'pontuacao' => $pontuacao,
+        'data' => $aluno['last_at'] ?? 'N/A',
+        'status' => $status,
+    ];
+}
+
 $totalAlunos = count($alunosResultados);
-$mediaGeral = array_sum(array_column($alunosResultados, 'pontuacao')) / $totalAlunos;
-$melhorAluno = array_reduce($alunosResultados, function($carry, $item) {
+$mediaGeral = $totalAlunos > 0 ? round(array_sum(array_column($alunosResultados, 'pontuacao')) / $totalAlunos) : 0;
+$melhorAluno = $totalAlunos > 0 ? array_reduce($alunosResultados, function($carry, $item) {
     return (!$carry || $item['pontuacao'] > $carry['pontuacao']) ? $item : $carry;
-});
+}) : ['nome' => 'N/A', 'pontuacao' => 0];
 
 require __DIR__ . '/includes/header.php';
 ?>
@@ -168,7 +188,7 @@ require __DIR__ . '/includes/header.php';
     <li><strong>Nível Iniciante:</strong> 0-40% (menos de 3 acertos)</li>
     <li><strong>Nível Intermédio:</strong> 40-80% (3-4 acertos)</li>
     <li><strong>Nível Avançado:</strong> 80-100% (4-5 acertos)</li>
-    <li><strong>Dados:</strong> Os resultados mostrados são dados de demonstração. Em produção, viriam da base de dados.</li>
+    <li><strong>Dados:</strong> Os resultados são carregados da base de dados para tutores verem desempenho real dos alunos.</li>
   </ul>
 </section>
 

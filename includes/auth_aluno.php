@@ -10,11 +10,10 @@ require __DIR__ . '/auth.php';
 if (($user['role'] ?? '') !== 'aluno') {
     // Não é aluno, redirecionar com base no tipo
     if (($user['role'] ?? '') === 'tutor') {
-        header('Location: resultados-tutor.php');
+        safe_redirect('resultados-tutor.php');
     } else {
-        header('Location: login.php');
+        safe_redirect('login.php');
     }
-    exit;
 }
 
 // Se chegou aqui, é aluno autenticado

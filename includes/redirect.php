@@ -3,11 +3,18 @@
 // Helper para redirects com URLs absolutas, evitando problemas de redirecionamento relativo.
 
 function safe_redirect(string $path): void {
-    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'];
-    $base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
-    $url = $scheme . '://' . $host . ($base === '/' ? '' : $base) . '/' . ltrim($path, '/');
+    // Evitar redirecionamentos abertos e garantir a URL é relativa/segura.
+    $path = trim($path);
+    if ($path === '') {
+        $path = 'index.php';
+    }
 
-    header('Location: ' . $url);
+    // If the path is external URL, fallback to index
+    if (preg_match('/^https?:\/\//i', $path)) {
+        $path = 'index.php';
+    }
+
+    // Enviar redirecionamento com saída imediata
+    header('Location: ' . $path);
     exit;
 }

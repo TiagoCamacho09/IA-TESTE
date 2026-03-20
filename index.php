@@ -8,7 +8,7 @@ require __DIR__ . '/includes/header.php';
 <section class="hero">
   <div class="hero-content">
     <h1>Aprende com um mini sistema de perguntas</h1>
-    <p>Simula um fluxo de login, registo, testes e análise de respostas — tudo localmente no XAMPP, sem base de dados.</p>
+    <p>Simula um fluxo de login, registo, testes e análise de respostas — tudo localmente no XAMPP, com suporte a base de dados MySQL.</p>
 
     <div class="hero-actions">
       <a class="button" href="login.php">Iniciar sessão</a>

@@ -8,5 +8,4 @@ if (session_status() === PHP_SESSION_NONE) {
 $_SESSION = [];
 
 // Redirecionar para a página inicial
-header('Location: index.php');
-exit;
+safe_redirect('index.php');

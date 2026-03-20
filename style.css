@@ -231,7 +231,17 @@ p {
   padding: 0.55rem 0.9rem;
   font-size: 0.9rem;
 }
+.tutor-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
 
+.tutor-actions .button {
+  flex: 1 1 auto;
+  min-width: 180px;
+}
 .form-group {
   display: grid;
   gap: 0.5rem;
@@ -351,12 +361,14 @@ textarea:focus {
   background: rgba(15, 23, 42, 0.08);
 }
 
-.badge-certo {
+.badge-certo,
+.badge-correct {
   background: rgba(16, 185, 129, 0.13);
   color: #0f5132;
 }
 
-.badge-errado {
+.badge-errado,
+.badge-incorrect {
   background: rgba(239, 68, 68, 0.12);
   color: #9b1c1c;
 }

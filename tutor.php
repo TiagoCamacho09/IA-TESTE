@@ -1,46 +1,11 @@
 <?php
-// tutor.php - Dashboard simplificado do tutor (DEPRECATED)
-// Esta página foi substituída por resultados-tutor.php
-// Mantida apenas por compatibilidade
+// tutor.php - Dashboard simplificado do tutor (mantido para compatibilidade)
+// Passa redirecionamento para a página atualizada de resultados do tutor.
 
 require __DIR__ . '/includes/auth_tutor.php';
 
-// Redirecionar para a nova página de resultados
-header('Location: resultados-tutor.php');
-exit;
+safe_redirect('resultados-tutor.php');
 
-// Processar updates de avaliação (status / comentário)
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['student_id'], $_POST['question_key'], $_POST['status'])) {
-    $studentId = (int) ($_POST['student_id'] ?? 0);
-    $questionKey = trim($_POST['question_key']);
-    $status = trim($_POST['status']);
-    $comment = trim($_POST['comment'] ?? '');
-
-    $allowedStatuses = ['pendente', 'certo', 'errado'];
-    if (!in_array($status, $allowedStatuses, true)) {
-        $status = 'pendente';
-    }
-
-    // Verificar se o estudante existe e é do tipo aluno
-    $stmt = $conn->prepare('SELECT id FROM users WHERE id = ? AND role = \'aluno\' LIMIT 1');
-    $stmt->bind_param('i', $studentId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows === 1 && isset($quizQuestions[$questionKey])) {
-        // Atualizar/guardar avaliação
-        $emptyAnswer = '';
-        $stmt = $conn->prepare(
-            'INSERT INTO quiz_answers (user_id, question_key, student_answer, status, comment)
-             VALUES (?, ?, ?, ?, ?)
-             ON DUPLICATE KEY UPDATE status = VALUES(status), comment = VALUES(comment)'
-        );
-        $stmt->bind_param('issss', $studentId, $questionKey, $emptyAnswer, $status, $comment);
-        $stmt->execute();
-    }
-
-    safe_redirect('tutor.php');
-}
 
 // Obter lista de alunos e as suas respostas
 $students = [];
