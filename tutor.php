@@ -5,20 +5,9 @@
 
 require __DIR__ . '/includes/auth_tutor.php';
 
-<<<<<<< HEAD
 // Redirecionar para a nova página de resultados
 header('Location: resultados-tutor.php');
 exit;
-
-=======
-// Definição das perguntas para apresentar ao tutor
-$quizQuestions = [
-    'commit' => 'O que é um commit?',
-    'push' => 'O que é push?',
-    'pull' => 'O que é pull?',
-    'branch' => 'O que é uma branch?',
-    'github' => 'Para que serve o GitHub?',
-];
 
 // Processar updates de avaliação (status / comentário)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['student_id'], $_POST['question_key'], $_POST['status'])) {
@@ -148,4 +137,3 @@ require __DIR__ . '/includes/header.php';
 </section>
 
 <?php require __DIR__ . '/includes/footer.php';
->>>>>>> contador-pontos

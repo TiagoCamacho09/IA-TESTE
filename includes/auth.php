@@ -14,12 +14,7 @@ require_once __DIR__ . '/config.php';
 // Verificar se existe utilizador na sessão
 if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
     // Não está autenticado, redirecionar para login
-<<<<<<< HEAD
-    header('Location: login.php');
-    exit;
-=======
     safe_redirect('login.php');
->>>>>>> contador-pontos
 }
 
 // Verifica se o utilizador ainda existe na base de dados

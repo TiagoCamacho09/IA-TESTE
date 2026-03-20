@@ -28,14 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $stmt->get_result();
         $userRow = $result->fetch_assoc();
 
-<<<<<<< HEAD
-        // Redirecionar de acordo com o tipo de utilizador
-        if ($role === 'tutor') {
-            header('Location: resultados-tutor.php');
-=======
+        // Verificar credenciais
         if (!$userRow || !password_verify($password, $userRow['password'])) {
             $error = 'Email ou palavra-passe inválidos.';
->>>>>>> contador-pontos
         } else {
             // Guardar dados do utilizador na sessão
             $_SESSION['user'] = [
@@ -48,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Redirecionar de acordo com o tipo de utilizador
             if ($userRow['role'] === 'tutor') {
-                safe_redirect('tutor.php');
+                safe_redirect('resultados-tutor.php');
             } else {
                 safe_redirect('dashboard.php');
             }
