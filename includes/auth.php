@@ -10,7 +10,7 @@ if (session_status() === PHP_SESSION_NONE) {
 // Verificar se existe utilizador na sessão
 if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
     // Não está autenticado, redirecionar para login
-    header('Location: ' . dirname(__DIR__) . '/login.php');
+    header('Location: login.php');
     exit;
 }
 

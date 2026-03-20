@@ -26,10 +26,11 @@ $current = basename($_SERVER['PHP_SELF']);
     <nav class="nav">
       <a href="index.php" class="<?= $current === 'index.php' ? 'active' : '' ?>">Início</a>
       <a href="teste.php" class="<?= $current === 'teste.php' ? 'active' : '' ?>">Teste</a>
+      <a href="livro.php" class="<?= $current === 'livro.php' ? 'active' : '' ?>">Livro</a>
       <?php if ($user): ?>
         <a href="dashboard.php" class="<?= $current === 'dashboard.php' ? 'active' : '' ?>">Dashboard</a>
         <?php if (($user['role'] ?? '') === 'tutor'): ?>
-          <a href="tutor.php" class="<?= $current === 'tutor.php' ? 'active' : '' ?>">Tutor</a>
+          <a href="resultados-tutor.php" class="<?= $current === 'resultados-tutor.php' ? 'active' : '' ?>">Resultados</a>
         <?php endif; ?>
       <?php endif; ?>
     </nav>

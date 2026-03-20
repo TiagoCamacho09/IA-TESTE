@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Redirecionar de acordo com o tipo de utilizador
         if ($role === 'tutor') {
-            header('Location: tutor.php');
+            header('Location: resultados-tutor.php');
         } else {
             header('Location: dashboard.php');
         }
