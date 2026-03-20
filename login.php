@@ -8,31 +8,51 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Incluir configuração da base de dados e helpers comuns
+require __DIR__ . '/includes/config.php';
+require_once __DIR__ . '/includes/redirect.php';
+
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = isset($_POST['email']) ? trim($_POST['email']) : '';
     $password = isset($_POST['password']) ? trim($_POST['password']) : '';
-    $role = isset($_POST['role']) ? trim($_POST['role']) : 'aluno';
 
-    // Validação simples (sem autenticação real)
     if ($email === '' || $password === '') {
         $error = 'Por favor, preenche o email e a palavra-passe.';
     } else {
-        // Guardamos os dados do utilizador na sessão
-        $_SESSION['user'] = [
-            'name' => preg_replace('/@.+$/', '', $email), // usar parte do email como nome
-            'email' => $email,
-            'role' => $role,
-        ];
+        // Procurar utilizador na base de dados
+        $stmt = $conn->prepare('SELECT id, name, email, password, role, pontos FROM users WHERE email = ? LIMIT 1');
+        $stmt->bind_param('s', $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $userRow = $result->fetch_assoc();
 
+<<<<<<< HEAD
         // Redirecionar de acordo com o tipo de utilizador
         if ($role === 'tutor') {
             header('Location: resultados-tutor.php');
+=======
+        if (!$userRow || !password_verify($password, $userRow['password'])) {
+            $error = 'Email ou palavra-passe inválidos.';
+>>>>>>> contador-pontos
         } else {
-            header('Location: dashboard.php');
+            // Guardar dados do utilizador na sessão
+            $_SESSION['user'] = [
+                'id' => (int) $userRow['id'],
+                'name' => $userRow['name'],
+                'email' => $userRow['email'],
+                'role' => $userRow['role'],
+                'pontos' => (int) $userRow['pontos'],
+            ];
+
+            // Redirecionar de acordo com o tipo de utilizador
+            if ($userRow['role'] === 'tutor') {
+                safe_redirect('tutor.php');
+            } else {
+                safe_redirect('dashboard.php');
+            }
         }
-        exit;
     }
 }
 
@@ -56,14 +76,6 @@ require __DIR__ . '/includes/header.php';
     <div class="form-group">
       <label for="password">Palavra-passe</label>
       <input id="password" name="password" type="password" placeholder="••••••••" required>
-    </div>
-
-    <div class="form-group">
-      <label for="role">Entrar como</label>
-      <select id="role" name="role" required>
-        <option value="aluno">Aluno</option>
-        <option value="tutor">Tutor</option>
-      </select>
     </div>
 
     <div class="actions">

@@ -63,6 +63,15 @@ $quiz = [
     ],
 ];
 
+// Definição das respostas corretas para calcular pontos
+$correct = [
+    'commit' => 'Um snapshot de alterações no repositório',
+    'push' => 'Enviar alterações locais para o repositório remoto',
+    'pull' => 'Trazer alterações do repositório remoto para a tua cópia local',
+    'branch' => 'Uma linha independente de desenvolvimento dentro do mesmo repositório',
+    'github' => 'Hospedar repositórios Git online e colaborar',
+];
+
 // Se o formulário foi submetido, validar e guardar as respostas na sessão
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $answers = [];
@@ -76,9 +85,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($missing)) {
         $error = 'Por favor, responde a todas as perguntas antes de ver o resultado.';
     } else {
-        $_SESSION['last_quiz'] = $answers;
-        header('Location: resultado.php');
-        exit;
+        // Guardar as respostas na base de dados (por aluno e pergunta)
+        $stmt = $conn->prepare(
+            'INSERT INTO quiz_answers (user_id, question_key, student_answer) VALUES (?, ?, ?) '
+            . 'ON DUPLICATE KEY UPDATE student_answer = VALUES(student_answer), status = "pendente", comment = NULL'
+        );
+
+        foreach ($answers as $key => $value) {
+            $userId = $user['id'];
+            $stmt->bind_param('iss', $userId, $key, $value);
+            $stmt->execute();
+        }
+
+        // Calcular pontos: 10 pontos por resposta correta
+        $score = 0;
+        foreach ($correct as $key => $expected) {
+            if (isset($answers[$key]) && $answers[$key] === $expected) {
+                $score++;
+            }
+        }
+        $pontos = $score * 10;
+
+        // Atualizar pontos do utilizador na base de dados (definir o total com base na última execução)
+        $stmt = $conn->prepare('UPDATE users SET pontos = ? WHERE id = ?');
+        $stmt->bind_param('ii', $pontos, $userId);
+        $stmt->execute();
+
+        // Atualizar pontos na sessão para mostrar imediatamente no header
+        if (isset($_SESSION['user'])) {
+            $_SESSION['user']['pontos'] = $pontos;
+        }
+        $user['pontos'] = $pontos;
+
+        safe_redirect('resultado.php');
     }
 }
 
